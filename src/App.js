@@ -254,6 +254,8 @@ export default function BackToTop(props) {
   const applicationDiv = () =>{
     var applicationForms = document.getElementById("forms");
     var coursechoice =  document.getElementById("CourseChoice");
+    var applyhere = document.getElementById("ApplyHereBtn");
+    applyhere.style = "display:none";
     coursechoice.style = "display:none";
     applicationForms.style = "display:block"
     // if (!ref.current) return;
@@ -266,9 +268,10 @@ export default function BackToTop(props) {
   const CancelBtnHandler = () =>{
     var HomePageArea = document.getElementById("HomePage");
     var applicationForms = document.getElementById("forms");
+    var applyhere = document.getElementById("ApplyHereBtn");
+    applyhere.style = "display:block";
     HomePageArea.style="display:flex";
     applicationForms.style = "display:none";
-
   }
  
   const onInputChange = (e) => {
@@ -317,6 +320,7 @@ export default function BackToTop(props) {
           <Toolbar>
             <img src={logo} alt="JM Tech Center" width="130px" height="130px" />
             <Button
+             id="ApplyHereBtn"
              onClick={() => applicationDivWithCourse(applicationForm)}
               className={classes.ApplyHereBtn}
               disableElevation
@@ -368,6 +372,7 @@ export default function BackToTop(props) {
                         ))}
                       </TextField>
                       <Button 
+                     
                       onClick = {()=>applicationDiv(applicationForm)}
                       style={{marginTop:'20px'}}
                       disableElevation variant="contained" color="secondary">Apply Now</Button>
