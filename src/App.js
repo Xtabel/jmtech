@@ -57,6 +57,17 @@ const useStyles = makeStyles((theme) => ({
   forms:{
     margin:'30px'
   },
+  homePage:{
+    [theme.breakpoints.down("xs")]: {
+      flexWrap:'wrap'
+        },
+  },
+  grids:{
+    [theme.breakpoints.down("xs")]: {
+    marginRight:'0px'
+        },
+  }
+
 }));
 
 const BootstrapInput = withStyles((theme) => ({
@@ -240,10 +251,26 @@ export default function BackToTop(props) {
 
   const applicationForm = React.useRef();
  
-  const applicationDiv = (ref) =>{
-    if (!ref.current) return;
-    ref.current.scrollIntoView({ behavior: "smooth" });
+  const applicationDiv = () =>{
+    var applicationForms = document.getElementById("forms");
+    var coursechoice =  document.getElementById("CourseChoice");
+    coursechoice.style = "display:none";
+    applicationForms.style = "display:block"
+    // if (!ref.current) return;
+    // ref.current.scrollIntoView({ behavior: "smooth" });
+    var HomePageArea = document.getElementById("HomePage");
+    HomePageArea.style="display:none";
+  
+  };
+
+  const CancelBtnHandler = () =>{
+    var HomePageArea = document.getElementById("HomePage");
+    var applicationForms = document.getElementById("forms");
+    HomePageArea.style="display:flex";
+    applicationForms.style = "display:none";
+
   }
+ 
   const onInputChange = (e) => {
         
     console.log(e.target.files);
@@ -265,6 +292,15 @@ export default function BackToTop(props) {
         setDisplayPicture(imageBase);
     
   }, [file]);
+
+  const applicationDivWithCourse = (ref) =>{
+   applicationDiv()
+    var coursechoice =  document.getElementById("CourseChoice");
+    coursechoice.style = "display:block";
+    var HomePageArea = document.getElementById("HomePage");
+    HomePageArea.style="display:none";
+  
+  }
   return (
     <React.Fragment>
       <CssBaseline />
@@ -281,7 +317,7 @@ export default function BackToTop(props) {
           <Toolbar>
             <img src={logo} alt="JM Tech Center" width="130px" height="130px" />
             <Button
-             onClick={() => applicationDiv(applicationForm)}
+             onClick={() => applicationDivWithCourse(applicationForm)}
               className={classes.ApplyHereBtn}
               disableElevation
               variant="outlined"
@@ -296,7 +332,8 @@ export default function BackToTop(props) {
           <Box my={2}>
             {[...new Array(1)].map(() => (
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+                <Box className={classes.homePage} id="HomePage" style={{display:"flex"}}>
+                <Grid className={classes.grids} item xs={12} sm={6} style={{marginRight:'20px', display:'flex'}} >
                   <Paper className={classes.paper}>
                     <img src={image} alt="Home Page Image" />
                   </Paper>
@@ -318,7 +355,7 @@ export default function BackToTop(props) {
                         fullWidth
                         id="outlined-select-currency"
                         select
-                        label="Select"
+                        label="Choose a course"
                         value={currency}
                         onChange={handleChange}
                         helperText="Please your course of interest"
@@ -337,10 +374,14 @@ export default function BackToTop(props) {
                     </FormControl>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={12} ref={applicationForm}>
+                </Box>
+               
+                
+                <Grid style={{display:"none"}} id="forms" item xs={12} sm={12} ref={applicationForm}>
                   <Paper className={classes.paper}>
                     <FormControl className={classes.forms} noValidate autoComplete="off">
                       <h2>Application Form For Microsoft Skilling Initiative</h2>
+                      <h2 style={{color:'#545454'}}>Program: <span>Backend Software Development</span></h2>
                       <h4 style={{fontStyle:"italic"}}><span style={{color:'#fe000067'}}>Note: </span>All Fields are required</h4>
                      <div style={{marginBottom:'20px'}}>
                      <Button
@@ -358,6 +399,7 @@ export default function BackToTop(props) {
                         hidden
                         onChange={onInputChange}
                       />
+                      <label accept="image/*" ></label>
                     </Button>
                     <Button
                     disableElevation
@@ -375,8 +417,26 @@ export default function BackToTop(props) {
                       />
                     </Button>
                      </div>
+                     <div id="CourseChoice" style={{display:'none'}}>
+                     <TextField
                      
-
+                     style={{ width: "100%", marginBottom:'20px', textAlign:'left'}}
+                     fullWidth
+                     id="outlined-select-currency"
+                     select
+                     label="Choose a course"
+                     value={currency}
+                     onChange={handleChange}
+                     variant="outlined"
+                   >
+                     {currencies.map((option) => (
+                       <MenuItem key={option.value} value={option.value}>
+                         {option.label}
+                       </MenuItem>
+                     ))}
+                   </TextField>
+                     </div>
+                     
                     <TextField
                       id="outlined-disabled"
                       label="First Name"
@@ -478,14 +538,12 @@ export default function BackToTop(props) {
                       variant="outlined"
                     />
                         <br/>
-                     <TextField
-                      id="outlined-disabled"
-                      label="Email Address"
-                      value="EmailAddress"
-                      variant="outlined"
-                    />
-                        <br/>
-                        <Button variant="contained" color="secondary">Submit</Button>
+                    
+                        <div style={{display:'flex', justifyContent:'flex-end'}}>
+                        <Button onClick={CancelBtnHandler} style={{marginRight:"20px"}} variant="outlined" color="primary">Cancel</Button>
+                        <Button style={{flexGrow:'1'}} variant="contained" color="secondary">Submit</Button>
+                        </div>
+                       
                     </FormControl>
                   </Paper>
                 </Grid>
