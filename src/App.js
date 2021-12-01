@@ -3,14 +3,11 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import validators from "./utils/Validators";
-// import {useDispatch} from 'react-redux';
 import { useForm } from "react-hook-form";
-import { SetIsRequiredError } from "./utils/ErrorHandler";
-// import {toastr} from 'react-redux-toastr';
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
@@ -25,14 +22,11 @@ import "./app.css";
 import { Button, Grid, Paper, TextField } from "@material-ui/core";
 import logo from "./assets/logo.png";
 import image from "./assets/image.gif";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import NativeSelect from "@material-ui/core/NativeSelect";
 import InputBase from "@material-ui/core/InputBase";
-import { SettingsRemoteSharp } from "@material-ui/icons";
 import DescriptionIcon from "@material-ui/icons/Description";
+import { CircularProgress } from '@material-ui/core';
 
 axios.defaults.baseURL = "http://jmtechcentre.azurewebsites.net/api/Applicant/";
 
@@ -60,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     textAlign: "center",
     color: theme.palette.text.secondary,
+    transition:'all easein 1s' 
   },
   ApplyHereBtn: {
     textTransform: "capitalize",
@@ -68,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "30px",
   },
   homePage: {
+    transition:'all easein 1s',
     [theme.breakpoints.down("xs")]: {
       flexWrap: "wrap",
     },
@@ -255,11 +251,9 @@ export default function BackToTop(props) {
     cv: "",
   };
 
-  const [formStates, setFormStates] = React.useState({
+  const initialFormState = {
     firstNameError: false,
     firstNameErrorMsg: "",
-    middleNameError: false,
-    middleNameErrorMsg: "",
     lastNameError: false,
     lastNameErrorMsg: "",
     emailAddressError: false,
@@ -280,9 +274,16 @@ export default function BackToTop(props) {
     uploadPassportErrorMsg: "",
     uploadCVError: false,
     uploadCVErrorMsg: "",
-  });
+  }
+
+  const [formStates, setFormStates] = React.useState(initialFormState);
 
   const [repo, setRepo] = useState([]);
+  const[loader,setLoader] = useState(true);
+  const[submitLoader, setSubmitLoader]= useState(false);
+  const[imageFormatMsg, setImageFormatMsg] = useState("");
+  const[cvFormatMsg, setCvFormatMsg]=useState("");
+  const [generalErrorMsg,setGeneralErrorMsg]=useState("");
   const [file, setFile] = useState(null);
   const [fileCV, setFileCV] = useState(null);
   const [displayPicture, setDisplayPicture] = useState("");
@@ -298,6 +299,7 @@ export default function BackToTop(props) {
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingForms, setLoadingForms] = useState(false);
   // Form Values
   const [formValues, setFormValues] = useState(initialFormValues);
 
@@ -316,11 +318,11 @@ export default function BackToTop(props) {
   ) => {
     debugger;
     if (!validators.isRequired(value, len, max, select)) {
-      setFormStates({
-        ...formStates,
+      setFormStates(prevState => [{
+        ...prevState,
         [stateError]: true,
         [stateErrorMsg]: errorMsg,
-      });
+      }]);
       return false;
     }
 
@@ -359,7 +361,7 @@ export default function BackToTop(props) {
         // alert('Error occured in loading All Data');
       })
       .then(function () {
-        // always executed
+        setLoader(false)
       });
   };
   const fetchStates = () => {
@@ -406,6 +408,10 @@ export default function BackToTop(props) {
     fetchData();
     fetchStates();
   }, []);
+  const logoFunction = ()=>{
+    var HomePageArea = document.getElementById("HomePage");
+    HomePageArea.style = "display:flex";
+  }
   const genderHandler = (e) => {
     if (e) {
       let genderValue = e.target.value;
@@ -445,12 +451,15 @@ export default function BackToTop(props) {
   const handleChange = (e) => {
     setDisable(false);
     setFormValues({ ...formValues, courseChoice: e.target.value });
+    
   };
 
   const applicationForm = React.useRef();
 
   const applicationDiv = () => {
-    var applicationForms = document.getElementById("forms");
+   
+    if(dataDropDown.length!=[""]){
+       var applicationForms = document.getElementById("forms");
     var coursechoice = document.getElementById("CourseChoice");
     var applyhere = document.getElementById("ApplyHereBtn");
     applyhere.style = "display:none";
@@ -460,6 +469,9 @@ export default function BackToTop(props) {
     // ref.current.scrollIntoView({ behavior: "smooth" });
     var HomePageArea = document.getElementById("HomePage");
     HomePageArea.style = "display:none";
+    setSubmitLoader(false);
+    // setFormValues({})
+    }
   };
 
   const CancelBtnHandler = () => {
@@ -470,27 +482,82 @@ export default function BackToTop(props) {
     HomePageArea.style = "display:flex";
     applicationForms.style = "display:none";
     setDisable(true);
+    setFormStates({...initialFormState});
+    setFormValues({...initialFormValues});
+    setFileCV(null);
+    setFile(null)
+    setIsSubmitted(false);
   };
+  const backToHomeHandler = () => {
+    var HomePageArea = document.getElementById("HomePage");
+    var applicationForms = document.getElementById("forms");
+    var applyhere = document.getElementById("ApplyHereBtn");
+    applyhere.style = "display:block";
+    HomePageArea.style = "display:flex";
+    applicationForms.style = "display:none";
+    setDisable(true);
+    setFormStates({...initialFormState});
+    setFormValues({...initialFormValues})
+    setIsSubmitted(false);
+    setFileCV(null);
+    setFile(null)
+  };
+
+  const validateImage = (e) =>{
+    setDisplayPicture(null)
+    setFile(null);
+    const NewImage = e.target.files[0];
+    if(NewImage  && NewImage != null){
+          if (!NewImage.name.match(/\.(jpg|jpeg|png)$/)) {
+            setImageFormatMsg("Image format must be in jpg, jpeg or png")
+            return false;
+          }else{
+            setImageFormatMsg("")
+          }
+          if (NewImage.size > 1024000) {
+          setImageFormatMsg("*File is too large, Size must be less than 1MB" );
+            return false;
+          }else{
+            setImageFormatMsg("")
+          }
+       setFile(NewImage);
+       setDisplayPicture(URL.createObjectURL(NewImage))
+    }else{
+        setFile(null)
+    }
+  }
 
   const passportUploadHandler = (e) => {};
 
   const onInputChange = (e) => {
-    debugger;
-    console.log(e.target.files);
-    let uploadedFile = e.target.files[0];
-    setFile(uploadedFile);
-    setDisplayPicture(URL.createObjectURL(uploadedFile));
-    // let formData = new FormData();
-    // formData.append ("passportFilePath" , file);
+    validateImage(e);
   };
+
+  const validateCV = (e) =>{
+    setCVName(null)
+    setFileCV(null);
+    const NewCV = e.target.files[0];
+    if(NewCV  && NewCV != null){
+          if (!NewCV.name.match(/\.(pdf|doc|docx)$/)) {
+            setCvFormatMsg("CV format must be in pdf, doc or docx")
+            return false;
+          }else{
+            setCvFormatMsg("")
+          }
+          if (NewCV.size > 1024000) {
+            setCvFormatMsg("File too large", "Size must be less than one megabyte" );
+            return false;
+          }else{
+            setCvFormatMsg("")
+          }
+       setFileCV(NewCV);
+       setCVName(URL.createObjectURL(NewCV))
+    }else{
+        setFile(null)
+    }
+  }
   const onInputCVChange = (e) => {
-    debugger;
-    console.log(e.target.files);
-    let uploadedCVFile = e.target.files[0];
-    setFileCV(uploadedCVFile);
-    setDisplayCV(URL.createObjectURL(uploadedCVFile));
-    // let formData = new FormData();
-    // formData.append ("passportFilePath" , file);
+   validateCV(e);
   };
 
   useEffect(() => {
@@ -546,11 +613,6 @@ export default function BackToTop(props) {
       e.preventDefault();
       let middleNameValue = e.target.value;
       setFormValues({ ...formValues, middleName: middleNameValue });
-      return SetIsRequiredError(
-        middleNameValue,
-        "middleNameError",
-        "middleNameErrorMsg"
-      );
     }
   };
   const lastNameHandler = (e) => {
@@ -573,7 +635,7 @@ export default function BackToTop(props) {
       setFormValues({ ...formValues, emailAddress: emailAddressValue });
     }
 
-    if (emailAddressValue === "") {
+    if (emailAddressValue === "" || emailAddressValue === undefined) {
       setFormStates({
         ...formStates,
         emailAddressError: false,
@@ -600,17 +662,29 @@ export default function BackToTop(props) {
     return true;
   };
   const phoneNumberHandler = (e) => {
+    let phoneNumberValue = e.target.value;   
     if (e) {
-      debugger;
       e.preventDefault();
-      let phoneNumberValue = e.target.value;
       setFormValues({ ...formValues, phoneNumber: phoneNumberValue });
-      return SetIsRequiredError(
-        phoneNumberValue,
-        "phoneNumberError",
-        "phoneNumberErrorMsg"
-      );
     }
+      if (!validators.isPhoneLength(phoneNumberValue)) {
+        setFormStates({
+          ...formStates,
+          phoneNumberError: true,
+          phoneNumberErrorMsg:
+            "Please enter a valid phone number or clear your selection",
+        });
+        return false;
+      }
+      setFormStates({
+        ...formStates,
+        phoneNumberError: false,
+        phoneNumberErrorMsg: "",
+      });
+      return true;
+      
+     
+    
   };
   const cityHandler = (e) => {
     if (e) {
@@ -634,7 +708,30 @@ export default function BackToTop(props) {
       );
     }
   };
+
+ const onSubmitHandler = () => {
+  setGeneralErrorMsg(null);
+   debugger
+    SetIsRequiredError( formValues.firstName, "firstNameError","firstNameErrorMsg");
+    SetIsRequiredError( formValues.lastName, "lastNameError","lastNameErrorMsg");
+    SetIsRequiredError( formValues.phoneNumber, "phoneNumberError","phoneNumberErrorMsg");
+    SetIsRequiredError( formValues.states, "statesError","statesErrorMsg");
+    SetIsRequiredError( formValues.sex, "sexError","sexErrorMsg");
+    SetIsRequiredError( formValues.emailAddress, "emailAddressError","emailAddressErrorMsg");
+    SetIsRequiredError( formValues.highestQualification, "highestQualificationError","highestQualificationErrorMsg");
+    SetIsRequiredError( formValues.courseOfStudy, "courseOfStudyError","courseOfStudyErrorMsg");
+    SetIsRequiredError( formValues.courseChoice, "courseChoiceError","courseChoiceErrorMsg");
+    SetIsRequiredError( formValues.city, "cityError","cityErrorMsg");
+    SetIsRequiredError( formValues.file, "fileError","fileErrorMsg");
+    SetIsRequiredError( formValues.fileCV, "fileCVError","fileCVErrorMsg")
+
+    
+  }
+
   const registerHandler = () => {
+    setSubmitLoader(true);
+    setGeneralErrorMsg('')
+     setIsSubmitted(true);
     debugger;
     let formData = new FormData();
     formData.append("FirstName", formValues.firstName);
@@ -667,20 +764,27 @@ export default function BackToTop(props) {
     //   resumeFilePath: formValues.cv,
     // }
 
+    
+    if(file === null || fileCV === null){
+      setSubmitLoader(false);
+      setGeneralErrorMsg('*All necessary documents must be uploaded');
+      return true
+    }
     if (
-      (formStates.firstNameError !== true ||
-        formStates.middleNameError !== true ||
-        formStates.lastNameError !== true,
-      formStates.emailAddressError !== true ||
-        formStates.phoneNumberError !== true ||
-        formStates.stateError !== true,
-      formStates.cityError !== true ||
-        formStates.highestQualificationError !== true ||
-        formStates.courseOfStudyError !== true,
-      formStates.genderError !== true ||
-        formStates.uploadPassportError !== true ||
-        formStates.uploadCVError !== true)
+      (formValues.firstName !== "" &&
+        formValues.lastName !== "" &&
+        formValues.emailAddress !== "" &&
+        formValues.phoneNumber !== "" &&
+        formValues.states !== "" &&
+        formValues.city !== "" &&
+        formValues.highestQualification !== "" &&
+        formValues.courseOfStudy !== "" &&
+        formValues.sex !== "" &&
+        formValues.courseChoice !== ""
+        )
     ) {
+     
+
       axios
         .post(
           `http://jmtechcentre.azurewebsites.net/api/Applicant/RegisterApplicant`,
@@ -688,27 +792,47 @@ export default function BackToTop(props) {
         )
         .then(function (response) {
           debugger;
-          // handle success
+          setSubmitLoader(false);
           setSubmit(response.data.data);
+          CancelBtnHandler();
+          setFile(null);
+          setFileCV(null);
         })
         .catch(function (error) {
-          // handle error
           console.log(error);
-          // alert('Error occured in loading All Data');
         })
         .then(function () {
-          // always executed
+         
+         
         });
-      setIsSubmitted(true);
-      var HomePageArea = document.getElementById("HomePage");
-      HomePageArea.style = "display:none";
+       
+    
+     
     } else {
-      alert("error");
+      setSubmitLoader(false);
+      setGeneralErrorMsg('*All fields except the middle name are required')
     }
+
+    
   };
   return (
     <React.Fragment>
       <CssBaseline />
+      {loader === true ?
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+     
+      <CircularProgress color="secondary" />
+      </Box>
+      :(
       <MuiThemeProvider theme={getMuiTheme}>
         <AppBar
           position="sticky"
@@ -720,7 +844,7 @@ export default function BackToTop(props) {
           }}
         >
           <Toolbar>
-            <img src={logo} alt="JM Tech Center" width="130px" height="130px" />
+            <img onClick={logoFunction}src={logo} alt="JM Tech Center" width="130px" height="130px" />
             <Button
               id="ApplyHereBtn"
               onClick={() => applicationDivWithCourse(applicationForm)}
@@ -741,14 +865,14 @@ export default function BackToTop(props) {
                 <Box
                   className={classes.homePage}
                   id="HomePage"
-                  style={{ display: "flex" }}
+                  style={{ display: "flex", transition:'all easein 1s' }}
                 >
                   <Grid
-                    className={classes.grids}
+                    className={`${classes.grids}header`}
                     item
                     xs={12}
                     sm={6}
-                    style={{ marginRight: "20px", display: "flex" }}
+                    style={{ marginRight: "20px", display: "flex", transition:'all easein 1s' }}
                   >
                     <Paper className={classes.paper}>
                       <img src={image} alt="Home Page Image" />
@@ -756,12 +880,18 @@ export default function BackToTop(props) {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Paper className={classes.paper}>
-                      <h1 style={{ fontSize: "3em" }}>
-                        {isSubmitted == false
+                      <h1 style={{ fontSize: "3em", margin:'0px'}}>
+                        {isSubmitted === false
                           ? "Welcome to JM Tech Learning Cente"
-                          : "Thank you for applying"}
+                          : (<span style={{color:'#fe0000'}}>Thank you for applying</span>)}
                       </h1>
-                      <h2>We offer a range of courses: </h2>
+                     
+                      <h2 style={{marginTop:'10px'}}>{isSubmitted === true ? 'A confirmation mail has been sent to your email':""}</h2>
+                      {isSubmitted === false ?
+                      (
+                        <>
+                      <h2>We offer a range of courses</h2>
+                     
                       <p style={{ fontStyle: "italic", color: "#949494" }}>
                         Data Science & AI, Cloud Development, Business
                         Application, Backend Software Development, Frontend
@@ -791,6 +921,7 @@ export default function BackToTop(props) {
                             </MenuItem>
                           ))}
                         </TextField>
+                       
                         <Button
                           disabled={disable}
                           onClick={() => applicationDiv(applicationForm)}
@@ -799,9 +930,24 @@ export default function BackToTop(props) {
                           variant="contained"
                           color="secondary"
                         >
-                          Apply Now
+                          {/* {!loadingForms && <CircularProgress/>} */}
+                          {/* {loadingForms && 'Apply Now'}  */}
+                         Apply Now
                         </Button>
                       </FormControl>
+                      </>
+                        )
+                        : <Button
+                        onClick={backToHomeHandler}
+                        style={{ marginTop: "20px", textTransform:'capitalize' }}
+                        disableElevation
+                        variant="contained"
+                        color="secondary"
+                      >
+                        {/* {!loadingForms && <CircularProgress/>} */}
+                        {/* {loadingForms && 'Apply Now'}  */}
+                       Go Back to Home
+                      </Button>}
                     </Paper>
                   </Grid>
                 </Box>
@@ -843,22 +989,50 @@ export default function BackToTop(props) {
                         </span>
                       </h2>
                       <h4 style={{ fontStyle: "italic" }}>
-                        <span style={{ color: "#fe000067" }}>Note: </span>All
-                        Fields are required
+                        <span style={{ color: "#fe000067" }}>Note: </span>All fields
+                        except the Middle Name are required
                       </h4>
-                      <div style={{ marginBottom: "20px" }}>
-                        <img
+                      <div>
+                      <span style={{color:'#fe0000'}}>{imageFormatMsg}</span>
+                      {openPictureSection?(
+                      <img
                           style={{
                             width: "150px",
                             height: "150px",
-                            borderRadius: "50%",
-                            // marginLeft: "5rem",
-                            // marginTop: "2rem",
-                            // marginBottom: "1rem",
+                            borderRadius: "20%",
+                            border:'4px solid #4c4c4c'
                           }}
                           src={displayPicture}
                           alt={pictureName}
-                        />
+                        />):""}
+                        {/* {openPictureSection ? (
+                          <Grid item xs={12}>
+                            <DescriptionIcon /> <small> {pictureName} </small>
+                          </Grid>
+                        ) : (
+                          ""
+                        )} */}
+                          <span style={{color:'#fe0000'}}>{cvFormatMsg}</span>
+                          {openCVSection ? (
+                          <Grid item xs={12}>
+                            <div style={{backgroundColor:'#949494', display:"flex", 
+                            justifyContent:'flex-start', padding:'0px 0px',
+                            borderRadius:'5px', color:'#fff', marginBottom:'10px'
+                            }}>
+                            <span style={{margin:'0px 10px 0px 0px', backgroundColor:'#4c4c4c',
+                             borderRadius:'5px 0px 0px 5px', padding:'10px 20px',
+                          }}>CV File :</span>
+                            <span style={{padding:'5px'}}><DescriptionIcon /> <small> {CVName} </small></span>
+                            </div>
+              
+                          </Grid>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                     
+                      <div style={{ marginBottom: "20px" }}>
+                        
                         <Button
                           onClick={passportUploadHandler()}
                           disableElevation
@@ -872,19 +1046,14 @@ export default function BackToTop(props) {
                           <small>Upload Passport Photo</small>
                           <input
                             type="file"
+                          
                             hidden
                             onChange={onInputChange}
-                            accept="image/*"
+                            accept="image/x-png,image/gif,image/jpeg" 
                           />
                           {/* <label accept="image/*"></label> */}
                         </Button>
-                        {openPictureSection ? (
-                          <Grid item xs={12}>
-                            <DescriptionIcon /> <small> {pictureName} </small>
-                          </Grid>
-                        ) : (
-                          ""
-                        )}
+                        
                         <Button
                           disableElevation
                           variant="contained"
@@ -903,13 +1072,7 @@ export default function BackToTop(props) {
                           {/* <label accept="/*"></label> */}
                         </Button>
 
-                        {openCVSection ? (
-                          <Grid item xs={12}>
-                            <DescriptionIcon /> <small> {CVName} </small>
-                          </Grid>
-                        ) : (
-                          ""
-                        )}
+                      
                       </div>
                       <div id="CourseChoice" style={{ display: "none" }}>
                         <TextField
@@ -942,7 +1105,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="First Name"
-                        value={formValues.firstName}
+                        value={(formValues.firstName).toUpperCase()}
                         error={formStates.firstNameError}
                         helperText={formStates.firstNameErrorMsg}
                         onChange={(event) => {
@@ -955,9 +1118,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="Middle Name"
-                        value={formValues.middleName}
-                        error={formStates.middleNameError}
-                        helperText={formStates.middleNameErrorMsg}
+                        value={(formValues.middleName).toUpperCase()}
                         onChange={(event) => {
                           middleNameHandler(event);
                         }}
@@ -968,7 +1129,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="Last Name"
-                        value={formValues.lastName}
+                        value={(formValues.lastName).toUpperCase()}
                         error={formStates.lastNameError}
                         helperText={formStates.lastNameErrorMsg}
                         onChange={(event) => {
@@ -981,7 +1142,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="Email Address"
-                        value={formValues.emailAddress}
+                        value={(formValues.emailAddress).toLowerCase()}
                         error={formStates.emailAddressError}
                         helperText={formStates.emailAddressErrorMsg}
                         onChange={(event) => {
@@ -991,15 +1152,20 @@ export default function BackToTop(props) {
                       />
                       <br />
                       <TextField
+                      type="number"
                         color="secondary"
                         id="outlined-disabled"
                         label="Phone Number"
-                        value={formValues.phoneNumber}
+                        value={(formValues.phoneNumber)}
                         error={formStates.phoneNumberError}
                         helperText={formStates.phoneNumberErrorMsg}
                         onChange={(event) => {
                           phoneNumberHandler(event);
                         }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">+234</InputAdornment>,
+                        }}
+              
                         variant="outlined"
                       />
                       <br />
@@ -1098,7 +1264,7 @@ export default function BackToTop(props) {
                         variant="outlined"
                       />
                       <br />
-
+                      <span style={{color:'#fe0000'}}>{generalErrorMsg}</span>
                       <div
                         style={{ display: "flex", justifyContent: "flex-end" }}
                       >
@@ -1116,7 +1282,9 @@ export default function BackToTop(props) {
                           variant="contained"
                           color="secondary"
                         >
-                          Submit
+                          {submitLoader === true ? <CircularProgress/>:
+                          'Submit'}
+                          {/* Submit */}
                         </Button>
                       </div>
                     </FormControl>
@@ -1132,6 +1300,7 @@ export default function BackToTop(props) {
           </Fab>
         </ScrollTop>
       </MuiThemeProvider>
+      )}
     </React.Fragment>
   );
 }

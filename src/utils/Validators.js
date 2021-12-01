@@ -17,6 +17,13 @@ const validators = {
         return true
       }
     },
+    isPhoneLength: (value = 0) => {
+      if(value.length > 10 || value.length<10){
+        return false
+      }else{
+        return true
+      }
+    },
   }
   
   export default validators;
