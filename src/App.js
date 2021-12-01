@@ -3,11 +3,9 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import validators from "./utils/Validators";
-import { useForm } from "react-hook-form";
 import Toolbar from "@material-ui/core/Toolbar";
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
@@ -24,7 +22,6 @@ import logo from "./assets/logo.png";
 import image from "./assets/image.gif";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import InputBase from "@material-ui/core/InputBase";
 import DescriptionIcon from "@material-ui/icons/Description";
 import { CircularProgress } from '@material-ui/core';
 
@@ -75,40 +72,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BootstrapInput = withStyles((theme) => ({
-  root: {
-    "label + &": {
-      marginTop: theme.spacing(3),
-    },
-  },
-  input: {
-    borderRadius: 4,
-    position: "relative",
-    backgroundColor: theme.palette.background.paper,
-    border: "1px solid #ced4da",
-    fontSize: 16,
-    padding: "10px 26px 10px 12px",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
-    // Use the system font instead of the default Roboto font.
-    fontFamily: [
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
-      "Roboto",
-      '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(","),
-    "&:focus": {
-      borderRadius: 4,
-      borderColor: "#80bdff",
-      boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
-    },
-  },
-}))(InputBase);
 function ScrollTop(props) {
   const { children, window } = props;
   const classes = useStyles();
@@ -152,32 +115,6 @@ ScrollTop.propTypes = {
 export default function BackToTop(props) {
   // const dispatch = useDispatch();
 
-  const currencies = [
-    {
-      value: "1",
-      label: "Data Science & AI",
-    },
-    {
-      value: "2",
-      label: "Cloud Development",
-    },
-    {
-      value: "3",
-      label: "Business Application",
-    },
-    {
-      value: "4",
-      label: "Backend Software Development",
-    },
-    {
-      value: "5",
-      label: "Frontend Software Development",
-    },
-    {
-      value: "6",
-      label: "Cyber Security",
-    },
-  ];
   const genders = [
     {
       value: "1",
@@ -210,28 +147,7 @@ export default function BackToTop(props) {
       label: "Others",
     },
   ];
-  const states = [
-    {
-      value: "1",
-      label: "Abuja",
-    },
-    {
-      value: "2",
-      label: "Lagos",
-    },
-    {
-      value: "3",
-      label: "Kaduna",
-    },
-    {
-      value: "4",
-      label: "Kano",
-    },
-    {
-      value: "5",
-      label: "Enugu",
-    },
-  ];
+  
 
   const initialFormValues = {
     userid: "",
@@ -278,7 +194,6 @@ export default function BackToTop(props) {
 
   const [formStates, setFormStates] = React.useState(initialFormState);
 
-  const [repo, setRepo] = useState([]);
   const[loader,setLoader] = useState(true);
   const[submitLoader, setSubmitLoader]= useState(false);
   const[imageFormatMsg, setImageFormatMsg] = useState("");
@@ -287,19 +202,11 @@ export default function BackToTop(props) {
   const [file, setFile] = useState(null);
   const [fileCV, setFileCV] = useState(null);
   const [displayPicture, setDisplayPicture] = useState("");
-  const [displayCV, setDisplayCV] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [gender, setGender] = useState("");
   const [theState, setTheState] = useState([]);
   const [theCity, setTheCity] = useState([]);
   const [disable, setDisable] = useState(true);
-  const [submit, setSubmit] = useState([]);
-  const [highestQualification, setHighestQualification] = useState("");
-  const [picture, setPicture] = useState(null);
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingForms, setLoadingForms] = useState(false);
+  
   // Form Values
   const [formValues, setFormValues] = useState(initialFormValues);
 
@@ -415,7 +322,7 @@ export default function BackToTop(props) {
   const genderHandler = (e) => {
     if (e) {
       let genderValue = e.target.value;
-      let genderName = e.currentTarget.textContent;
+      // let genderName = e.currentTarget.textContent;
       e.preventDefault();
 
       setFormValues({ ...formValues, sex: genderValue });
@@ -425,7 +332,7 @@ export default function BackToTop(props) {
   const QualificationHandler = (e) => {
     if (e) {
       let qualificationValue = e.target.value;
-      let qualificationName = e.currentTarget.textContent;
+      // let qualificationName = e.currentTarget.textContent;
       e.preventDefault();
 
       setFormValues({
@@ -446,7 +353,6 @@ export default function BackToTop(props) {
     fetchLGA(stateIds);
   };
   const classes = useStyles();
-  const [currency, setCurrency] = React.useState("1");
 
   const handleChange = (e) => {
     setDisable(false);
@@ -458,7 +364,7 @@ export default function BackToTop(props) {
 
   const applicationDiv = () => {
    
-    if(dataDropDown.length!=[""]){
+    if(dataDropDown.length !== [""]){
        var applicationForms = document.getElementById("forms");
     var coursechoice = document.getElementById("CourseChoice");
     var applyhere = document.getElementById("ApplyHereBtn");
@@ -507,7 +413,7 @@ export default function BackToTop(props) {
     setDisplayPicture(null)
     setFile(null);
     const NewImage = e.target.files[0];
-    if(NewImage  && NewImage != null){
+    if(NewImage  && NewImage !== null){
           if (!NewImage.name.match(/\.(jpg|jpeg|png)$/)) {
             setImageFormatMsg("Image format must be in jpg, jpeg or png")
             return false;
@@ -709,24 +615,7 @@ export default function BackToTop(props) {
     }
   };
 
- const onSubmitHandler = () => {
-  setGeneralErrorMsg(null);
-   debugger
-    SetIsRequiredError( formValues.firstName, "firstNameError","firstNameErrorMsg");
-    SetIsRequiredError( formValues.lastName, "lastNameError","lastNameErrorMsg");
-    SetIsRequiredError( formValues.phoneNumber, "phoneNumberError","phoneNumberErrorMsg");
-    SetIsRequiredError( formValues.states, "statesError","statesErrorMsg");
-    SetIsRequiredError( formValues.sex, "sexError","sexErrorMsg");
-    SetIsRequiredError( formValues.emailAddress, "emailAddressError","emailAddressErrorMsg");
-    SetIsRequiredError( formValues.highestQualification, "highestQualificationError","highestQualificationErrorMsg");
-    SetIsRequiredError( formValues.courseOfStudy, "courseOfStudyError","courseOfStudyErrorMsg");
-    SetIsRequiredError( formValues.courseChoice, "courseChoiceError","courseChoiceErrorMsg");
-    SetIsRequiredError( formValues.city, "cityError","cityErrorMsg");
-    SetIsRequiredError( formValues.file, "fileError","fileErrorMsg");
-    SetIsRequiredError( formValues.fileCV, "fileCVError","fileCVErrorMsg")
 
-    
-  }
 
   const registerHandler = () => {
     setSubmitLoader(true);
@@ -747,22 +636,6 @@ export default function BackToTop(props) {
     formData.append("CityId", formValues.city);
     formData.append("passportFilePath", file);
     formData.append("resumeFilePath", fileCV);
-
-    // let submitData = {
-    //   FirstName: formValues.firstName,
-    //   LastName:formValues.lastName,
-    //   MiddleName: formValues.middleName,
-    //   EmailAddress: formValues.emailAddress,
-    //   PhoneNumber: formValues.phoneNumber,
-    //   StateId: formValues.stateId,
-    //   Gender:formValues.gender,
-    //   HighestQualification:formValues.highestQualification,
-    //   CourseOfHighestQualification: formValues.courseOfStudy,
-    //   CourseofChoiceId: formValues.courseChoice,
-    //   CityId: formValues.cityId,
-    //   passportFilePath: setDisplayPicture("data:image/jpeg;base64," + formValues.passport),
-    //   resumeFilePath: formValues.cv,
-    // }
 
     
     if(file === null || fileCV === null){
@@ -793,7 +666,7 @@ export default function BackToTop(props) {
         .then(function (response) {
           debugger;
           setSubmitLoader(false);
-          setSubmit(response.data.data);
+          // setSubmit(response.data.data);
           CancelBtnHandler();
           setFile(null);
           setFileCV(null);
@@ -875,7 +748,7 @@ export default function BackToTop(props) {
                     style={{ marginRight: "20px", display: "flex", transition:'all easein 1s' }}
                   >
                     <Paper className={classes.paper}>
-                      <img src={image} alt="Home Page Image" />
+                      <img src={image} alt="Home Page" />
                     </Paper>
                   </Grid>
                   <Grid item xs={12} sm={6}>
