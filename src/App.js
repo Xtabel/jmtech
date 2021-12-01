@@ -393,6 +393,9 @@ export default function BackToTop(props) {
     setFileCV(null);
     setFile(null)
     setIsSubmitted(false);
+    setGeneralErrorMsg('');
+    setCvFormatMsg('');
+    setImageFormatMsg('');
   };
   const backToHomeHandler = () => {
     var HomePageArea = document.getElementById("HomePage");
