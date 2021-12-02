@@ -721,7 +721,7 @@ export default function BackToTop(props) {
     formData.append("CourseOfHighestQualification", formValues.courseOfStudy);
     formData.append("CourseofChoiceId", formValues.courseChoice);
     formData.append("LGaId", formValues.lga);
-    formData.append("CityId", formValues.city);
+    formData.append("City", formValues.city);
     formData.append("passportFilePath", file);
     formData.append("resumeFilePath", fileCV);
 
@@ -741,7 +741,8 @@ export default function BackToTop(props) {
         formValues.highestQualification !== "" &&
         formValues.courseOfStudy !== "" &&
         formValues.sex !== "" &&
-        formValues.courseChoice !== ""
+        formValues.courseChoice !== "" &&
+        formValues.city !== ""
         )
     ) {
      
