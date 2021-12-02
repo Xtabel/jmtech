@@ -16,7 +16,6 @@ import Container from "@material-ui/core/Container";
 import Fab from "@material-ui/core/Fab";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Zoom from "@material-ui/core/Zoom";
-import "./app.css";
 import { Button, Grid, Paper, TextField } from "@material-ui/core";
 import logo from "./assets/logo.png";
 import image from "./assets/image.gif";
@@ -102,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
   },
   formText:{
     [theme.breakpoints.only('xs')]:{
-     fontSize:'1em'
+     fontSize:'1.4em'
     },
   },
   programText:{
@@ -227,7 +226,7 @@ export default function BackToTop(props) {
     stateError: false,
     stateErrorMsg: "",
     lgaError:false,
-    lgaErrorMsg:"",
+    lgaErrorMsg:"Select a state before choosing LGA",
     cityError: false,
     cityErrorMsg: "",
     highestQualificationError: false,
@@ -243,7 +242,7 @@ export default function BackToTop(props) {
   }
 
   const [formStates, setFormStates] = React.useState(initialFormState);
-
+  const [lgaDisable, setLgaDisable] = useState(true);
   const[loader,setLoader] = useState(true);
   const[submitLoader, setSubmitLoader]= useState(false);
   const[imageFormatMsg, setImageFormatMsg] = useState("");
@@ -254,6 +253,7 @@ export default function BackToTop(props) {
   const [displayPicture, setDisplayPicture] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [theState, setTheState] = useState([]);
+  const[theLga, setTheLga] = useState([]);
   const [theCity, setTheCity] = useState([]);
   const [disable, setDisable] = useState(true);
   
@@ -348,7 +348,6 @@ export default function BackToTop(props) {
   };
 
   const fetchLGA = (stateIds) => {
-    
     axios
       .post(
         `http://jmtechcentre.azurewebsites.net/api/Applicant/GetLGAByStateId?stateId=${stateIds}`
@@ -356,7 +355,8 @@ export default function BackToTop(props) {
       .then(function (response) {
         
         // handle success
-        setTheCity(response.data.data);
+        setLgaDisable(false)
+        setTheLga(response.data.data);
       })
       .catch(function (error) {
         // handle error
@@ -440,20 +440,13 @@ export default function BackToTop(props) {
     }
   };
   const submitBtnHandler = () => {
+    debugger
     var HomePageArea = document.getElementById("HomePage");
     var applicationForms = document.getElementById("forms");
     var applyhere = document.getElementById("ApplyHereBtn");
     applyhere.style = "display:block";
     HomePageArea.style = "display:flex";
     applicationForms.style = "display:none";
-    // setDisable(true);
-    // setFormStates({...initialFormState});
-    // setFormValues({...initialFormValues});
-    // setFileCV(null);
-    // setFile(null)
-    // // setIsSubmitted(false);
-    // setGeneralErrorMsg('');
-    // setCvFormatMsg('');
   }
 
   const CancelBtnHandler = () => {
@@ -688,6 +681,14 @@ export default function BackToTop(props) {
       return SetIsRequiredError(lgaNameValue, "lgaError", "lgaErrorMsg");
     }
   };
+  const cityHandler = (e) => {
+    if (e) {
+      
+      e.preventDefault();
+      let cityNameValue = e.target.value;
+      setFormValues({ ...formValues, city: cityNameValue });
+    }
+  };
   const courseOfStudyHandler = (e) => {
     if (e) {
       
@@ -705,6 +706,7 @@ export default function BackToTop(props) {
 
 
   const registerHandler = () => {
+    debugger
     setSubmitLoader(true);
     setGeneralErrorMsg('');
      setIsSubmitted(true);
@@ -719,7 +721,8 @@ export default function BackToTop(props) {
     formData.append("HighestQualification", formValues.highestQualification);
     formData.append("CourseOfHighestQualification", formValues.courseOfStudy);
     formData.append("CourseofChoiceId", formValues.courseChoice);
-    formData.append("CityId", formValues.lga);
+    formData.append("LGaId", formValues.lga);
+    formData.append("CityId", formValues.city);
     formData.append("passportFilePath", file);
     formData.append("resumeFilePath", fileCV);
 
@@ -750,8 +753,8 @@ export default function BackToTop(props) {
           formData
         )
         .then(function (response) {
-          submitBtnHandler();
           setSubmitLoader(false);
+          submitBtnHandler();
           isSubmitted(true);
           // setSubmit(response.data.data);
           // setFile(null);
@@ -841,9 +844,9 @@ export default function BackToTop(props) {
                   </Grid>
                   <Grid item xs={12} sm={6} >
                     <Paper className={classes.papers}>
-                      <h1 style={{ fontSize: "3em", margin:'0px'}}>
+                      <h1  style={{ fontSize: "3em", margin:'0px'}}>
                         {isSubmitted === false
-                          ? "Welcome to JM Tech Learning Cente"
+                          ? "Welcome to JM Tech Learning Center"
                           : (<span style={{color:'#FF5C5C', margin:'5px'}}>Thank you for applying</span>)}
                       </h1>
                      
@@ -1174,6 +1177,7 @@ export default function BackToTop(props) {
                       </TextField>
                       <br />
                       <TextField
+                        disabled={lgaDisable}
                         color="secondary"
                         style={{ textAlign: "left" }}
                         id="outlined-select-currency"
@@ -1187,7 +1191,7 @@ export default function BackToTop(props) {
                         }}
                         variant="outlined"
                       >
-                        {theCity.map((option) => (
+                        {theLga.map((option) => (
                           <MenuItem key={option.lgaId} value={option.lgaId}>
                             {option.lgaName}
                           </MenuItem>
@@ -1195,17 +1199,17 @@ export default function BackToTop(props) {
                       </TextField>
 
                       <br />
-                      {/* <TextField
+                      <TextField
                         color="secondary"
                         id="outlined-disabled"
                         label="City Of Residnece"
-                        value="When Akan completes the registration api"
+                        value={formValues.city}
                         onChange={(event) => {
-                          middleNameHandler(event);
+                          cityHandler(event);
                         }}
                         variant="outlined"
                       />
-                      <br/> */}
+                      <br/>
 
                       <TextField
                         color="secondary"
