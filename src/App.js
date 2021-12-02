@@ -254,7 +254,6 @@ export default function BackToTop(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [theState, setTheState] = useState([]);
   const[theLga, setTheLga] = useState([]);
-  const [theCity, setTheCity] = useState([]);
   const [disable, setDisable] = useState(true);
   
   // Form Values
