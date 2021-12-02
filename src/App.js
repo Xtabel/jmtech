@@ -51,7 +51,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     textAlign: "center",
     color: theme.palette.text.secondary,
-    transition:'all easein 1s' 
+    transition:'all easein 1s', 
+  },
+  papers:{
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+    transition:'all easein 1s', 
+    [theme.breakpoints.only('xs')]:{
+     marginTop:'0px !important',
+     fontSize:'9px',
+     padding: '0px',
+    }
   },
   ApplyHereBtn: {
     textTransform: "capitalize",
@@ -66,10 +77,46 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   grids: {
-    [theme.breakpoints.down("xs")]: {
-      marginRight: "0px",
+     marginRight: "20px", 
+     transition:'all easein 1s',
+    [theme.breakpoints.only("xs")]: {
+      marginRight: "0px !important",
+   
     },
   },
+  theImage:{
+    [theme.breakpoints.only("xs")]:{
+      width:'300px',
+      height:'auto'
+   
+    },
+  },
+  applyNow:{
+    marginBottom:'10px'
+  },
+  buttonUploadPhoto:{
+    [theme.breakpoints.only('xs')]:{
+      padding:'10px',
+      marginBottom:'10px'
+    },
+  },
+  formText:{
+    [theme.breakpoints.only('xs')]:{
+     fontSize:'1em'
+    },
+  },
+  programText:{
+    [theme.breakpoints.only('xs')]:{
+      fontSize:'1em'
+    },
+  },
+  cvformatError:{
+    color:'#fe0000',
+    [theme.breakpoints.only('xs')]:{
+      fontSize:'1em'
+    },
+  },
+  
 }));
 
 function ScrollTop(props) {
@@ -157,6 +204,7 @@ export default function BackToTop(props) {
     emailAddress: "",
     phoneNumber: "",
     states: "",
+    lga:"",
     city: "",
     cityid: "",
     sex: "",
@@ -178,6 +226,8 @@ export default function BackToTop(props) {
     phoneNumberErrorMsg: "",
     stateError: false,
     stateErrorMsg: "",
+    lgaError:false,
+    lgaErrorMsg:"",
     cityError: false,
     cityErrorMsg: "",
     highestQualificationError: false,
@@ -223,7 +273,6 @@ export default function BackToTop(props) {
     max = 0,
     select = false
   ) => {
-    debugger;
     if (!validators.isRequired(value, len, max, select)) {
       setFormStates(prevState => [{
         ...prevState,
@@ -261,13 +310,12 @@ export default function BackToTop(props) {
 
   const [dataDropDown, setDataDropDown] = useState([]);
   const fetchData = () => {
-    debugger;
     axios
       .post(
         `http://jmtechcentre.azurewebsites.net/api/Applicant/GetCoursePrograms`
       )
       .then(function (response) {
-        debugger;
+        
         // handle success
         setDataDropDown(response.data.data);
       })
@@ -281,11 +329,11 @@ export default function BackToTop(props) {
       });
   };
   const fetchStates = () => {
-    debugger;
+    
     axios
       .post(`http://jmtechcentre.azurewebsites.net/api/Applicant/GetStates`)
       .then(function (response) {
-        debugger;
+        
         // handle success
         setTheState(response.data.data);
       })
@@ -300,13 +348,13 @@ export default function BackToTop(props) {
   };
 
   const fetchLGA = (stateIds) => {
-    debugger;
+    
     axios
       .post(
         `http://jmtechcentre.azurewebsites.net/api/Applicant/GetLGAByStateId?stateId=${stateIds}`
       )
       .then(function (response) {
-        debugger;
+        
         // handle success
         setTheCity(response.data.data);
       })
@@ -327,6 +375,9 @@ export default function BackToTop(props) {
   const logoFunction = ()=>{
     var HomePageArea = document.getElementById("HomePage");
     HomePageArea.style = "display:flex";
+    var applicationForms = document.getElementById("forms");
+    applicationForms.style="display:none";
+    CancelBtnHandler();
   }
   const genderHandler = (e) => {
     if (e) {
@@ -356,7 +407,7 @@ export default function BackToTop(props) {
     }
   };
   const StateHandler = (e) => {
-    debugger;
+    
     const stateIds = e.target.value;
     setFormValues({ ...formValues, states: stateIds });
     fetchLGA(stateIds);
@@ -388,9 +439,7 @@ export default function BackToTop(props) {
     // setFormValues({})
     }
   };
-  debugger
   const submitBtnHandler = () => {
-    debugger
     var HomePageArea = document.getElementById("HomePage");
     var applicationForms = document.getElementById("forms");
     var applyhere = document.getElementById("ApplyHereBtn");
@@ -532,7 +581,7 @@ export default function BackToTop(props) {
 
   const firstNameHandler = (e) => {
     if (e) {
-      debugger;
+      
       e.preventDefault();
       let firstNameValue = e.target.value;
       setFormValues({ ...formValues, firstName: firstNameValue });
@@ -545,7 +594,7 @@ export default function BackToTop(props) {
   };
   const middleNameHandler = (e) => {
     if (e) {
-      debugger;
+      
       e.preventDefault();
       let middleNameValue = e.target.value;
       setFormValues({ ...formValues, middleName: middleNameValue });
@@ -553,7 +602,7 @@ export default function BackToTop(props) {
   };
   const lastNameHandler = (e) => {
     if (e) {
-      debugger;
+      
       e.preventDefault();
       let lastNameValue = e.target.value;
       setFormValues({ ...formValues, lastName: lastNameValue });
@@ -630,18 +679,18 @@ export default function BackToTop(props) {
      
     
   };
-  const cityHandler = (e) => {
+  const lgaHandler = (e) => {
     if (e) {
-      debugger;
+      
       e.preventDefault();
-      let cityNameValue = e.target.value;
-      setFormValues({ ...formValues, city: cityNameValue });
-      return SetIsRequiredError(cityNameValue, "cityError", "cityErrorMsg");
+      let lgaNameValue = e.target.value;
+      setFormValues({ ...formValues, lga: lgaNameValue });
+      return SetIsRequiredError(lgaNameValue, "lgaError", "lgaErrorMsg");
     }
   };
   const courseOfStudyHandler = (e) => {
     if (e) {
-      debugger;
+      
       e.preventDefault();
       let courseOfStudyValue = e.target.value;
       setFormValues({ ...formValues, courseOfStudy: courseOfStudyValue });
@@ -659,7 +708,6 @@ export default function BackToTop(props) {
     setSubmitLoader(true);
     setGeneralErrorMsg('');
      setIsSubmitted(true);
-    debugger;
     let formData = new FormData();
     formData.append("FirstName", formValues.firstName);
     formData.append("LastName", formValues.lastName);
@@ -671,7 +719,7 @@ export default function BackToTop(props) {
     formData.append("HighestQualification", formValues.highestQualification);
     formData.append("CourseOfHighestQualification", formValues.courseOfStudy);
     formData.append("CourseofChoiceId", formValues.courseChoice);
-    formData.append("CityId", formValues.city);
+    formData.append("CityId", formValues.lga);
     formData.append("passportFilePath", file);
     formData.append("resumeFilePath", fileCV);
 
@@ -687,7 +735,7 @@ export default function BackToTop(props) {
         formValues.emailAddress !== "" &&
         formValues.phoneNumber !== "" &&
         formValues.states !== "" &&
-        formValues.city !== "" &&
+        formValues.lga !== "" &&
         formValues.highestQualification !== "" &&
         formValues.courseOfStudy !== "" &&
         formValues.sex !== "" &&
@@ -780,25 +828,26 @@ export default function BackToTop(props) {
                   style={{ display: "flex", transition:'all easein 1s' }}
                 >
                   <Grid
-                    className={`${classes.grids}header`}
+                    className={classes.grids}
                     item
                     xs={12}
                     sm={6}
-                    style={{ marginRight: "20px", display: "flex", transition:'all easein 1s' }}
+                    
+                   
                   >
-                    <Paper className={classes.paper}>
-                      <img src={image} alt="Home Page" />
+                    <Paper className={classes.papers}>
+                      <img className={classes.theImage} src={image} alt="Home Page" />
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Paper className={classes.paper}>
+                  <Grid item xs={12} sm={6} >
+                    <Paper className={classes.papers}>
                       <h1 style={{ fontSize: "3em", margin:'0px'}}>
                         {isSubmitted === false
                           ? "Welcome to JM Tech Learning Cente"
-                          : (<span style={{color:'#fe0000'}}>Thank you for applying</span>)}
+                          : (<span style={{color:'#FF5C5C', margin:'5px'}}>Thank you for applying</span>)}
                       </h1>
                      
-                      <h2 style={{marginTop:'10px'}}>{isSubmitted === true ? 'A confirmation mail has been sent to your email':""}</h2>
+                      <h2 style={{margin:'10px', fontSize:'1.4em'}}>{isSubmitted === true ? 'A confirmation mail has been sent to your email':""}</h2>
                       {isSubmitted === false ?
                       (
                         <>
@@ -835,6 +884,7 @@ export default function BackToTop(props) {
                         </TextField>
                        
                         <Button
+                          className={classes.applyNow}
                           disabled={disable}
                           onClick={() => applicationDiv(applicationForm)}
                           style={{ marginTop: "20px" }}
@@ -851,7 +901,7 @@ export default function BackToTop(props) {
                         )
                         : <Button
                         onClick={backToHomeHandler}
-                        style={{ marginTop: "20px", textTransform:'capitalize' }}
+                        style={{ margin: "20px 0px", textTransform:'capitalize' }}
                         disableElevation
                         variant="contained"
                         color="secondary"
@@ -877,10 +927,10 @@ export default function BackToTop(props) {
                       noValidate
                       autoComplete="off"
                     >
-                      <h2>
+                      <h2 className={classes.formText}>
                         Application Form For Microsoft Skilling Initiative
                       </h2>
-                      <h2 style={{ color: "#545454" }}>
+                      <h2 className={classes.programText}style={{ color: "#545454" }}>
                         Program:{" "}
                         <span>
                           {formValues.courseChoice === 1
@@ -924,7 +974,7 @@ export default function BackToTop(props) {
                         ) : (
                           ""
                         )} */}
-                          <span style={{color:'#fe0000'}}>{cvFormatMsg}</span>
+                          <span className={classes.cvformatError}>{cvFormatMsg}</span>
                           {openCVSection ? (
                           <Grid item xs={12}>
                             <div style={{backgroundColor:'#949494', display:"flex", 
@@ -946,6 +996,7 @@ export default function BackToTop(props) {
                       <div style={{ marginBottom: "20px" }}>
                         
                         <Button
+                        className={classes.buttonUploadPhoto}
                           onClick={passportUploadHandler()}
                           disableElevation
                           style={{ marginRight: "15px" }}
@@ -1128,11 +1179,11 @@ export default function BackToTop(props) {
                         id="outlined-select-currency"
                         select
                         label="LGA Of Residence"
-                        value={formValues.city}
-                        error={formStates.cityError}
-                        helperText={formStates.cityErrorMsg}
+                        value={formValues.lga}
+                        error={formStates.lgaError}
+                        helperText={formStates.lgaErrorMsg}
                         onChange={(e) => {
-                          cityHandler(e);
+                          lgaHandler(e);
                         }}
                         variant="outlined"
                       >
@@ -1144,6 +1195,17 @@ export default function BackToTop(props) {
                       </TextField>
 
                       <br />
+                      {/* <TextField
+                        color="secondary"
+                        id="outlined-disabled"
+                        label="City Of Residnece"
+                        value="When Akan completes the registration api"
+                        onChange={(event) => {
+                          middleNameHandler(event);
+                        }}
+                        variant="outlined"
+                      />
+                      <br/> */}
 
                       <TextField
                         color="secondary"
