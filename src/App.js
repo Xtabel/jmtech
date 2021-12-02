@@ -250,6 +250,15 @@ export default function BackToTop(props) {
   //   }
   // },[])
 
+  function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   const [dataDropDown, setDataDropDown] = useState([]);
   const fetchData = () => {
     debugger;
@@ -379,6 +388,24 @@ export default function BackToTop(props) {
     // setFormValues({})
     }
   };
+  debugger
+  const submitBtnHandler = () => {
+    debugger
+    var HomePageArea = document.getElementById("HomePage");
+    var applicationForms = document.getElementById("forms");
+    var applyhere = document.getElementById("ApplyHereBtn");
+    applyhere.style = "display:block";
+    HomePageArea.style = "display:flex";
+    applicationForms.style = "display:none";
+    // setDisable(true);
+    // setFormStates({...initialFormState});
+    // setFormValues({...initialFormValues});
+    // setFileCV(null);
+    // setFile(null)
+    // // setIsSubmitted(false);
+    // setGeneralErrorMsg('');
+    // setCvFormatMsg('');
+  }
 
   const CancelBtnHandler = () => {
     var HomePageArea = document.getElementById("HomePage");
@@ -575,6 +602,13 @@ export default function BackToTop(props) {
     if (e) {
       e.preventDefault();
       setFormValues({ ...formValues, phoneNumber: phoneNumberValue });
+      if (phoneNumberValue.charAt(0)=== "0") {
+        phoneNumberValue = phoneNumberValue.substring(1)
+        setFormValues({ ...formValues, phoneNumber: phoneNumberValue });
+       
+      }else{
+        setFormValues({ ...formValues, phoneNumber: phoneNumberValue });
+      }
     }
       if (!validators.isPhoneLength(phoneNumberValue)) {
         setFormStates({
@@ -583,6 +617,7 @@ export default function BackToTop(props) {
           phoneNumberErrorMsg:
             "Please enter a valid phone number or clear your selection",
         });
+        
         return false;
       }
       setFormStates({
@@ -622,7 +657,7 @@ export default function BackToTop(props) {
 
   const registerHandler = () => {
     setSubmitLoader(true);
-    setGeneralErrorMsg('')
+    setGeneralErrorMsg('');
      setIsSubmitted(true);
     debugger;
     let formData = new FormData();
@@ -667,12 +702,13 @@ export default function BackToTop(props) {
           formData
         )
         .then(function (response) {
-          debugger;
+          submitBtnHandler();
           setSubmitLoader(false);
+          isSubmitted(true);
           // setSubmit(response.data.data);
-          CancelBtnHandler();
-          setFile(null);
-          setFileCV(null);
+          // setFile(null);
+          // setFileCV(null);
+          
         })
         .catch(function (error) {
           console.log(error);
@@ -978,10 +1014,11 @@ export default function BackToTop(props) {
                       </div>
 
                       <TextField
+                        
                         color="secondary"
                         id="outlined-disabled"
                         label="First Name"
-                        value={(formValues.firstName).toUpperCase()}
+                        value={toTitleCase(formValues.firstName)}
                         error={formStates.firstNameError}
                         helperText={formStates.firstNameErrorMsg}
                         onChange={(event) => {
@@ -994,7 +1031,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="Middle Name"
-                        value={(formValues.middleName).toUpperCase()}
+                        value={toTitleCase(formValues.middleName)}
                         onChange={(event) => {
                           middleNameHandler(event);
                         }}
@@ -1005,7 +1042,7 @@ export default function BackToTop(props) {
                         color="secondary"
                         id="outlined-disabled"
                         label="Last Name"
-                        value={(formValues.lastName).toUpperCase()}
+                        value={toTitleCase(formValues.lastName)}
                         error={formStates.lastNameError}
                         helperText={formStates.lastNameErrorMsg}
                         onChange={(event) => {
@@ -1071,7 +1108,7 @@ export default function BackToTop(props) {
                         style={{ textAlign: "left" }}
                         id="outlined-select-currency"
                         select
-                        label="State"
+                        label="State Of Residence"
                         value={formValues.states}
                         onChange={(e) => {
                           StateHandler(e);
@@ -1090,7 +1127,7 @@ export default function BackToTop(props) {
                         style={{ textAlign: "left" }}
                         id="outlined-select-currency"
                         select
-                        label="City"
+                        label="LGA Of Residence"
                         value={formValues.city}
                         error={formStates.cityError}
                         helperText={formStates.cityErrorMsg}
