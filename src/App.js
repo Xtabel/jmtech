@@ -313,7 +313,7 @@ export default function BackToTop(props) {
   const fetchData = () => {
     axios
       .post(
-        `https://www.waeconline.org.ng/JMTechAPI/api/GetCoursePrograms`
+        `https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetCoursePrograms`
       )
       .then(function (response) {
         
