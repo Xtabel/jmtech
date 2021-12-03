@@ -24,7 +24,9 @@ import FormControl from "@material-ui/core/FormControl";
 import DescriptionIcon from "@material-ui/icons/Description";
 import { CircularProgress } from '@material-ui/core';
 
-axios.defaults.baseURL = "http://jmtechcentre.azurewebsites.net/api/Applicant/";
+// axios.defaults.baseURL = "http://jmtechcentre.azurewebsites.net/api/Applicant/";
+// axios.defaults.baseURL = "https://www.waeconline.org.ng/JMTechAPI/swagger/index.html";
+
 
 const getMuiTheme = createTheme({
   palette: {
@@ -311,7 +313,7 @@ export default function BackToTop(props) {
   const fetchData = () => {
     axios
       .post(
-        `http://jmtechcentre.azurewebsites.net/api/Applicant/GetCoursePrograms`
+        `https://www.waeconline.org.ng/JMTechAPI/api/GetCoursePrograms`
       )
       .then(function (response) {
         
@@ -330,7 +332,7 @@ export default function BackToTop(props) {
   const fetchStates = () => {
     
     axios
-      .post(`http://jmtechcentre.azurewebsites.net/api/Applicant/GetStates`)
+      .post(`https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetStates`)
       .then(function (response) {
         
         // handle success
@@ -349,7 +351,7 @@ export default function BackToTop(props) {
   const fetchLGA = (stateIds) => {
     axios
       .post(
-        `http://jmtechcentre.azurewebsites.net/api/Applicant/GetLGAByStateId?stateId=${stateIds}`
+        `https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetLGAByStateId?stateId=${stateIds}`
       )
       .then(function (response) {
         
@@ -749,7 +751,7 @@ export default function BackToTop(props) {
 
       axios
         .post(
-          `http://jmtechcentre.azurewebsites.net/api/Applicant/RegisterApplicant`,
+          `https://www.waeconline.org.ng/JMTechAPI/api/Applicant/RegisterApplicant`,
           formData
         )
         .then(function (response) {
