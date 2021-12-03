@@ -1202,7 +1202,7 @@ export default function BackToTop(props) {
                       <TextField
                         color="secondary"
                         id="outlined-disabled"
-                        label="City Of Residnece"
+                        label="City Of Residence"
                         value={formValues.city}
                         onChange={(event) => {
                           cityHandler(event);
