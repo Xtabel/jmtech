@@ -5,8 +5,7 @@ import AppBar from "@material-ui/core/AppBar";
 import validators from "./utils/Validators";
 import Toolbar from "@material-ui/core/Toolbar";
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { makeStyles } from "@material-ui/core/styles";
-import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { makeStyles,createTheme, MuiThemeProvider  } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
@@ -175,23 +174,23 @@ export default function BackToTop(props) {
   ];
   const qualifications = [
     {
-      value: "1",
+      value: "HND",
       label: "HND",
     },
     {
-      value: "2",
+      value: "1st Degree",
       label: "1st Degree",
     },
     {
-      value: "3",
+      value: "Master",
       label: "Master",
     },
     {
-      value: "4",
+      value: "PHD",
       label: "PHD",
     },
     {
-      value: "5",
+      value: "Others",
       label: "Others",
     },
   ];
@@ -243,6 +242,8 @@ export default function BackToTop(props) {
     uploadCVErrorMsg: "",
   }
 
+  const [responseFirstName, setResponseFirstName] = useState("");
+  const [responseRegistrationCode, setResponseRegistrationCode] = useState("");
   const [formStates, setFormStates] = React.useState(initialFormState);
   const [lgaDisable, setLgaDisable] = useState(true);
   const[loader,setLoader] = useState(true);
@@ -392,7 +393,7 @@ export default function BackToTop(props) {
   };
   const QualificationHandler = (e) => {
     if (e) {
-      let qualificationValue = e.target.value;
+      let qualificationValue = e.target.value
       // let qualificationName = e.currentTarget.textContent;
       e.preventDefault();
 
@@ -441,7 +442,6 @@ export default function BackToTop(props) {
     }
   };
   const submitBtnHandler = () => {
-    debugger
     var HomePageArea = document.getElementById("HomePage");
     var applicationForms = document.getElementById("forms");
     var applyhere = document.getElementById("ApplyHereBtn");
@@ -707,7 +707,6 @@ export default function BackToTop(props) {
 
 
   const registerHandler = () => {
-    debugger
     setSubmitLoader(true);
     setGeneralErrorMsg('');
      setIsSubmitted(true);
@@ -755,6 +754,9 @@ export default function BackToTop(props) {
           formData
         )
         .then(function (response) {
+          debugger
+          setResponseFirstName(response.data.data.firstName)
+          setResponseRegistrationCode(response.data.data.registrationCode)
           setSubmitLoader(false);
           submitBtnHandler();
           isSubmitted(true);
@@ -849,10 +851,15 @@ export default function BackToTop(props) {
                       <h1  style={{ fontSize: "3em", margin:'0px'}}>
                         {isSubmitted === false
                           ? "Welcome to JM Tech Learning Center"
-                          : (<span style={{color:'#FF5C5C', margin:'5px'}}>Thank you for applying</span>)}
+                          : (
+                            <>
+                          <span style={{color:'#FF5C5C', margin:'5px 15px'}}>Thank you for applying</span>
+                            <p style={{fontSize:'25px', margin:'20px 0px', fontWeight:'lighter'}}>Hello {responseFirstName}, your registration code is <b>{responseRegistrationCode}</b></p>
+                          </>
+                          )}
                       </h1>
                      
-                      <h2 style={{margin:'10px', fontSize:'1.4em'}}>{isSubmitted === true ? 'A confirmation mail has been sent to your email':""}</h2>
+                      <h2 style={{margin:'10px', fontSize:'1.3em'}}>{isSubmitted === true ? 'A confirmation mail has been sent to your email':""}</h2>
                       {isSubmitted === false ?
                       (
                         <>
