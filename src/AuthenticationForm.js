@@ -74,7 +74,6 @@ export default function AuthenticationForm({ open, handleClose }) {
             style={{width:500}}
             color="secondary"
             label="Enter a token"
-            value="Token"
             helperText="Enter a valid Token"
             variant="outlined"
             fullWidth
