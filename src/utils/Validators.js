@@ -10,6 +10,10 @@ const validators = {
       let mailformat = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
       return mailformat.test(value) === false ? false : true;
     },
+    isYahoo: (value = "") =>{
+      let yahooformat = /^[^@]+@(yahoo|ymail|rocketmail)\.(com|in|co\.uk)$/i;
+      return yahooformat.test(value) === false ? false : true;
+    },
     isNumeric: (value = 0) => {
       if(isNaN(value) || value < 1){
         return false
