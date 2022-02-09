@@ -1,13 +1,21 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import moment from 'moment';
-import LoadingOverlay from 'react-loading-overlay';
-import { CircularProgress,Box } from "@material-ui/core";
-import MUIDataTable from "mui-datatables";
+import moment from "moment";
+import LoadingOverlay from "react-loading-overlay";
 import {
-  createTheme,
-  MuiThemeProvider,
-} from "@material-ui/core/styles";
+  CircularProgress,
+  Box,
+  Grid,
+  IconButton,
+  Button,
+} from "@material-ui/core";
+import { VisibilityOutlined } from "@material-ui/icons";
+import MUIDataTable from "mui-datatables";
+import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import newlogo from "../assets/newlogo.png";
+import ViewApplicant from "./ViewApplicant";
+import { withRouter } from "react-router";
+
 
 const getMuiTheme = createTheme({
   palette: {
@@ -31,29 +39,34 @@ const getMuiTheme = createTheme({
         textAlign: "left",
       },
     },
-    MUIDataTableToolbar:{
-        titleText:{
-            color:'#fe0000',
-        },
+    MUIDataTableToolbar: {
+      titleText: {
+        color: "#fe0000",
+      },
+    },
   },
-}
 });
 
-
 const GetAllApplicantTable = () => {
+
+    const [applicantId, setApplicantId] = useState(0);
+    
+
+
+
+
   const columns = [
     {
-        name: "ApplicantId",
-        label: "Id",
-        options: {
-          filter: true,
-          sort: true,
-        //   setCellProps: () => ({ style: { minWidth: "105px" } }),
-          customBodyRender: (value, tableMeta) => {
-            return value === undefined || value === "" ? "" : value;
-          },
+      name: "ApplicantId",
+      label: "Id",
+      options: {
+        sort: true,
+        filter: false,
+        customBodyRender: (value, tableMeta) => {
+          return <span>{tableMeta.rowIndex + 1}</span>;
         },
       },
+    },
     {
       name: "LastName",
       label: "Last Name",
@@ -108,7 +121,7 @@ const GetAllApplicantTable = () => {
       options: {
         filter: true,
         sort: true,
-        setCellProps: () => ({ style: { minWidth: "200px" } }),
+        setCellProps: () => ({ style: { minWidth: "90px" } }),
         customBodyRender: (value, tableMeta) => {
           return value === undefined || value === "" ? "null" : value;
         },
@@ -216,7 +229,7 @@ const GetAllApplicantTable = () => {
       options: {
         filter: true,
         sort: true,
-        setCellProps: () => ({ style: { minWidth: "180px" } }),
+        setCellProps: () => ({ style: { minWidth: "150px" } }),
         customBodyRender: (value, tableMeta) => {
           return value === undefined || value === "" || value === null
             ? "null"
@@ -234,145 +247,171 @@ const GetAllApplicantTable = () => {
         customBodyRender: (value, tableMeta) => {
           return value === undefined || value === "" || value === null
             ? "no date found"
-            : moment(value).format("MMMM DD YYYY");;
+            : moment(value).format("MMMM DD YYYY");
+        },
+      },
+    },
+    {
+      name: "Action",
+      label: "Action",
+      options: {
+        filter: false,
+        sort: false,
+        setCellProps: () => ({ style: { minWidth: "100px" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <span>
+              <Button 
+              onClick={()=>openView(value)}
+              style={{textTransform:'capitalize'}}
+              startIcon={<VisibilityOutlined />}
+              variant="contained"
+        color="primary"
+        size="small"
+              >View
+              </Button>
+            </span>
+          );
         },
       },
     },
   ];
-  //   const columns = ["Name", "Company", "City", "State"];
+
   const [loader, setLoader] = useState(true);
-  const[loaderPage,setLoaderPage] = useState(true)
-  const [loading, setLoading] = useState(true);
+  const [open,setOpen]=useState(false);
+  const [loaderPage, setLoaderPage] = useState(true);
   const [allApplicantTableData, setAllApplicantTableData] = useState([]);
-  const [allApplicantTableDataResponse, setAllApplicantTableDataResponse] = useState([]);
-  const [paginationOptions, setPaginationOptions] = useState({});
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [filterStatus, setFilterStatus] = useState(0);
+  const [allApplicantTableDataResponse, setAllApplicantTableDataResponse] =useState([]);
+  const [firstName,setFirstName]= useState("");
+  const [lastName,setLastName]= useState("");
+  const [middleName,setMiddleName]=useState("");
+  const [emailAddress, setEmailAddress]= useState("");
+  const [phoneNumber,setPhoneNumer] = useState("");
+  const [gender,setGender]=useState("");
+  const [state,setState]=useState("");
+  const [lga,setlga] = useState("");
+  const [city,setCity] = useState("");
+  const [highestQual,setHighestQual] = useState("");
+  const [courseOfHighestQual,setCourseOfHighestQual] = useState("");
+  const [courseName,setCourseName] = useState("");
+  const [regCode,setRegCode]=useState("");
+  const [dateReg,setDateReg] = useState("")
   const [searchText, setSearchText] = useState("");
+  const [passport,setPassport]=useState("");
+  const [resume,setResume]= useState("");
 
-  const changePage = page => {
-    // setIsLoading(true);
-    setLoader(true);
-    setPageIndex(page);
-};
+  const handleClickOpen = ()=>{
+     
+      setOpen(true)
+  }
+  const handleClose = ()=>{
+    setOpen(false);
+    setFirstName("")
+    setLastName("")
+    setMiddleName("")
+    setEmailAddress("")
+    setPhoneNumer("")
+    setGender("")
+    setState("")
+    setlga("")
+    setCity("")
+    setHighestQual("")
+    setCourseOfHighestQual("")
+    setCourseName("")
+    setRegCode("")
+    setDateReg("")
+    setApplicantId("")
+    setPassport("")
+    setResume("")
+    
+  }
+  const openView =(val)=>{
+      debugger
+      setFirstName(val.FirstName)
+      setLastName(val.LastName)
+      setMiddleName(val.MiddleName)
+      setEmailAddress(val.EmailAddress)
+      setPhoneNumer(val.PhoneNumber)
+      setGender(val.Gender)
+      setState(val.StateofResidence)
+      setlga(val.LocalGovtofResidence)
+      setCity(val.City)
+      setHighestQual(val.HighestQualification)
+      setCourseOfHighestQual(val.CourseOfHighestQualification)
+      setCourseName(val.CourseName)
+      setRegCode(val.RegistrationCode)
+      setDateReg(val.DateRegistered)
+      setApplicantId(val.ApplicantId)
+    handleClickOpen()
+    fetchApplicantById(val.ApplicantId)
+  }
 
-const updateSearchText = text => {
+  const updateSearchText = (text) => {
     // setIsLoading(true);
     setSearchText(text);
   };
 
-const  resetFilter = () =>{
-  setFilterStatus(0);
-
-}
-
   const options = {
-    filterType: "checkbox",
-    jumpToPage: true,
+    filter: true,
+    filterType: "dropdown",
+    responsive: "standard",
+    selectableRows: "none",
     fixedHeader: true,
+    selectableRowsHeader: false,
+    rowsPerPageOptions:[10,20,50,100,200],
+    elevation: 3,
+    textLabels: {
+      body: {
+        noMatch: "Sorry, there is no matching data to display",
+      },
+    },
+    onSearchChange: (searchText) => {
+      updateSearchText(searchText);
+    },
   };
-  //datatable options
+
+  //effect populating table data
   useEffect(() => {
-    ;
-    if (
-        allApplicantTableDataResponse &&
-      Object.keys(allApplicantTableDataResponse).length !== 0
-    ) {
-      let paginationOptions = {
-          //  responsive: "scrollFullHeight",
-          filter: false,
-          search:false,
-          filterType: "dropdown",
-          // selectableRows: "none",
-          // selectableRows: true,
-          // selectableRowsOnClick: true,
-          //filters: false,
-          rowsPerPage: 10,
-          rowsPerPageOptions: [10],
-          serverSide: true,
-          jumpToPage: true,
-          //count, // Use total number of items
-          textLabels: {
-              body: {
-                  noMatch: loading ? (
-                      <CircularProgress />
-                  ) : (
-                      "Sorry, there is no matching data to display"
-                  )
-              }
-          },
-          count:
-          allApplicantTableDataResponse.p.RecordTotal === undefined
-            ? ""
-            : allApplicantTableDataResponse.p.RecordTotal, // Unknown number of items
-        page: pageIndex,
-        onSearchChange: searchText => {
-          //console.log(searchText);
-          updateSearchText(searchText);
-        },
-
-        onTableChange: (action, tableState) => {
-          // console.log(action, tableState);
-          if (action === "changePage") {
-            console.log("Go to page", tableState.page);
-            changePage(tableState.page);
-          } else {
-            return (
-              <CircularProgress />
-            );
-          }
-        }
-      };
-
-      setPaginationOptions(paginationOptions);
-    }
+    const createTableData = () => {
+      let allApplicantTableData = [];
+      allApplicantTableDataResponse.forEach((val) => {
+        let row = [
+          val,
+          val.LastName,
+          val.FirstName,
+          val.MiddleName,
+          val.Gender,
+          val.EmailAddress,
+          val.PhoneNumber,
+          val.StateofResidence,
+          val.LocalGovtofResidence,
+          val.City,
+          val.HighestQualification,
+          val.CourseOfHighestQualification,
+          val.CourseName,
+          val.RegistrationCode,
+          val.DateRegistered,
+          val,
+        ];
+        allApplicantTableData.push(row);
+        return;
+      });
+      setAllApplicantTableData(allApplicantTableData);
+      setLoader(false);
+    };
+    allApplicantTableDataResponse.length !== 0 && createTableData();
   }, [allApplicantTableDataResponse]);
 
-  
-  useEffect(()=>{
-      if (allApplicantTableDataResponse !== null && allApplicantTableDataResponse !== undefined){
-        const createTableData = () => {
-
-          let allApplicantTableData = [];
-  
-          let paginatedAllApplicantTableData = allApplicantTableDataResponse.applicant;
-  
-          paginatedAllApplicantTableData.map(val => {
-              let row = [
-                  val.ApplicantId,
-                  val.LastName,
-                  val.FirstName,
-                  val.MiddleName,
-                  val.Gender,
-                  val.EmailAddress,
-                  val.PhoneNumber,
-                  val.StateofResidence,
-                  val.LocalGovtofResidence,
-                  val.City,
-                  val.HighestQualification,
-                  val.CourseOfHighestQualification,
-                  val.CourseName,
-                  val.RegistrationCode,
-                  val.DateRegistered,
-            
-              ];
-              allApplicantTableData.push(row);
-          });
-          setAllApplicantTableData(allApplicantTableData);
-          setLoader(false);
-        
-        }
-        Object.keys(allApplicantTableDataResponse).length !== 0 && createTableData();
-      }
-    },[allApplicantTableDataResponse]);
+  const [applicant,setApplicant] = useState([]);
 
   const fetchAllApplicantTable = (body) => {
-    
+    debugger;
     axios
-      .post(`https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetAllApplicants`, body)
+      .post(
+        `https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetAllApplicants`,
+        body
+      )
       .then(function (response) {
-        
         // handle success
         setAllApplicantTableDataResponse(response.data.Data);
         setLoaderPage(false);
@@ -388,47 +427,102 @@ const  resetFilter = () =>{
   };
   useEffect(() => {
     let Datas = {
-      pageIndex: pageIndex,
-      pageSize: pageSize,
       search: searchText,
-  };
-   fetchAllApplicantTable(Datas);
-}, [pageIndex, searchText]);
+    };
+    fetchAllApplicantTable(Datas);
+  }, [searchText]);
 
- 
+  const fetchApplicantById = (id)=>{
+      debugger
+    axios.post(`https://www.waeconline.org.ng/JMTechAPI/api/Applicant/GetApplicantsById?applicantId=${id}`)
+    .then(function (response) {
+      debugger
+        setApplicant(response.data.Data);
+        setPassport(response.data.Data[0].Passport)
+        setResume(response.data.Data[0].Resume)
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+      // alert('Error occured in loading All Data');
+    })
+    .then(function () {
+      // always executed
+    });
+}
+  
   return (
     <MuiThemeProvider theme={getMuiTheme}>
-      <div style={{ padding: "40px 20px 0px 20px" }}>
-    <>
-      {loaderPage === true ?
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-     
-      <CircularProgress color="secondary" />
-      </Box>
-      :
-      <LoadingOverlay active={loader} styles={{ overlay: (base) => ({ ...base, background: 'rgba(0, 0, 0, 0.15)' }) }} spinner text="Fetching Data for You...">
-        <MUIDataTable
-          title={"Applicants List"}
-          data={allApplicantTableData}
-          columns={columns}
-          options={paginationOptions}
-        /> 
-        </LoadingOverlay>
-        
-        }
+      <div style={{ padding: "60px 50px 50px 50px" }}>
+        <>
+          {loaderPage === true ? (
+            <Box
+              top={0}
+              left={0}
+              bottom={0}
+              right={0}
+              position="absolute"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress color="secondary" />
+            </Box>
+          ) : (
+            <LoadingOverlay
+              active={loader}
+              styles={{
+                overlay: (base) => ({
+                  ...base,
+                  background: "rgba(0, 0, 0, 0.15)",
+                }),
+              }}
+              spinner
+              text="Fetching Data for You..."
+            >
+              <Grid>
+                <div
+                  style={{
+                    backgroundColor: "#1a1a1a",
+                    justifyContent: "space-between",
+                    display: "flex",
+                    padding: "10px 20px",
+                    height: "50px",
+                    borderRadius: "10px",
+                    marginBottom: "20px",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <b style={{ color: "#fff", textAlign: "center" }}>
+                    ALL APPLICANTS DATA 
+                  </b>
+                </div>
+              </Grid>
+              <MUIDataTable
+                title={
+                  <img
+                    src={newlogo}
+                    alt="JM Tech Centre"
+                    width="130px"
+                    height="70px"
+                  />
+                }
+                data={allApplicantTableData}
+                columns={columns}
+                options={options}
+              />
+            </LoadingOverlay>
+          )}
         </>
       </div>
+      <ViewApplicant handleOpen={open} handleClose={handleClose} applicantId={applicantId} firstName = {firstName}
+      lastName={lastName} middleName={middleName} emailAddress={emailAddress} phoneNumber = {phoneNumber}
+      gender={gender} state={state} lga={lga} city = {city} passport={passport} resume={resume}
+      highestQual={highestQual} courseOfHighestQual={courseOfHighestQual} courseName={courseName} regCode = {regCode} dateReg={dateReg}
+      
+      />
     </MuiThemeProvider>
   );
 };
 
-export default GetAllApplicantTable;
+export default withRouter(GetAllApplicantTable);
