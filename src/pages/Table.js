@@ -23,6 +23,11 @@ const getMuiTheme = createTheme({
     primary: { main: "#fe0000" },
   },
   overrides: {
+    MuiTableCell:{
+      root:{
+        padding:'2px 20px !important',
+      },
+    },
     MUIDataTableBodyRow: {
       root: {
         "&:nth-child(odd)": {
